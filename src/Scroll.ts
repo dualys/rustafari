@@ -7,7 +7,25 @@ export class Scroll {
     private e: Element;
     private lastScrollTop: number = 0;
     private lastScrollLeft: number = 0;
+    private boundScrollHandler: ((e: Event) => void) | null = null;
 
+    onFastScroll(callback: EventListener, speedThreshold: number = 1000): this {
+        // ... ta logique existante ...
+
+        // On stocke la référence de la fonction fléchée
+        this.boundScrollHandler = (e: Event) => {
+            // calcul de vitesse...
+        };
+        window.addEventListener('scroll', this.boundScrollHandler);
+        return this;
+    }
+
+    public destroy() {
+        // On détache proprement l'événement de la fenêtre !
+        if (this.boundScrollHandler) {
+            window.removeEventListener('scroll', this.boundScrollHandler);
+        }
+    }
     /**
      * Creates an instance of Scroll.
      *

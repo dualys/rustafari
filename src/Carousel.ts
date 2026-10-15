@@ -25,7 +25,26 @@ export class Carousel {
     private currentIndex: number; // Index of the currently visible slide.
     private intervalId: number | null; // ID for the auto-scroll interval timer.
     private autoScrollInterval: number; // Interval time (in milliseconds) for auto-scrolling.
+    private touchStartX: number = 0;
 
+    // 1. Ajouter le support tactile mobile
+    private initTouchEvents() {
+        this.container.addEventListener('touchstart', (e) => {
+            this.touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            if (this.touchStartX - touchEndX > 50) this.showNextSlide(); // Swipe gauche
+            if (this.touchStartX - touchEndX < -50) this.showPreviousSlide(); // Swipe droite
+        });
+    }
+
+    // 2. La méthode vitale de nettoyage
+    public destroy() {
+        this.stopAutoScroll(); // Tue le window.setInterval
+        // Le Garbage Collector de JS nettoiera le reste quand le DOM sera détruit par Turbo
+    }
     /**
      * Creates an instance of the Carousel.
      *
@@ -42,7 +61,7 @@ export class Carousel {
         this.currentIndex = 0;
         this.intervalId = null;
         this.autoScrollInterval = autoScrollInterval;
-
+        this.initTouchEvents();
         this.initCarousel();
     }
 
